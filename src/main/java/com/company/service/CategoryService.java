@@ -5,21 +5,24 @@ import com.company.repository.CategoryRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
+import jakarta.validation.Valid;
 import java.util.List;
 
 @Service
-
+@Transactional
 public class CategoryService {
     private CategoryRepository categoryRepository;
     @Autowired
     public CategoryService(CategoryRepository categoryRepository) {
         this.categoryRepository = categoryRepository;
     }
-    public void addCategory( Category category) throws DataAccessException, MethodArgumentNotValidException {
+    public Category addCategory( Category category) throws DataAccessException, MethodArgumentNotValidException {
 
-        categoryRepository.saveAndFlush(category);
+        Category addedCategory=categoryRepository.saveAndFlush(category);
+        return addedCategory;
     }
     public List<Category> getAllCategories() throws DataAccessException {
         return categoryRepository.findAll();

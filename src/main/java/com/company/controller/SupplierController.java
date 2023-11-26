@@ -31,12 +31,10 @@ public class SupplierController {
             Supplier supplier = new Supplier();
             supplier.setName(dto.getName());
             supplier.setAddress(dto.getAddress());
-            supplierService.addSupplier(supplier);
-            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDTO.of(dto, "success"));
+            Supplier addedSupplier=supplierService.addSupplier(supplier);
+            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDTO.of(new SupplierDTO(addedSupplier), "success"));
         } catch (DataAccessException ex) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while adding supplier"));
-        } catch (MethodArgumentNotValidException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Validation failed"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Bad Request"));
         }
@@ -58,9 +56,5 @@ public class SupplierController {
         }
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public ResponseEntity<String> handleValidationException(MethodArgumentNotValidException ex) {
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Validation failed");
-    }
+
 }

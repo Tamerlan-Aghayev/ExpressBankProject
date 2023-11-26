@@ -1,9 +1,13 @@
 package com.company.dto;
 
+import com.company.annotation.FixedSize;
+import com.company.annotation.NotNullOrBlank;
 import com.company.entity.Supplier;
 
 public class SupplierDTO {
     private long id;
+    @FixedSize(min=3,max = 50)
+    @NotNullOrBlank
     private String name;
     private String address;
     public SupplierDTO(){}

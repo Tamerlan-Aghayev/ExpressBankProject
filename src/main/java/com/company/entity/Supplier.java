@@ -23,6 +23,16 @@ public class Supplier {
     private String address;
     @OneToMany(mappedBy = "supplierBySupplierId")
     private List<Product> productsById;
+    public Supplier(){}
+    public Supplier(String name, String address) {
+        this.name = name;
+        this.address = address;
+    }
+    public Supplier(long id ,String name, String address) {
+        this.id=id;
+        this.name = name;
+        this.address = address;
+    }
 
     public long getId() {
         return id;

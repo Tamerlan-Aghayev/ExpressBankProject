@@ -15,19 +15,21 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
+import jakarta.validation.Valid;
 import java.util.ArrayList;
 import java.util.List;
 
 @RestController
 public class ProductController {
     private final ProductService productService;
-    private final CategoryService categoryService;
+
     private final SupplierService supplierService;
+    private final CategoryService categoryService;
     @Autowired
     public ProductController(ProductService productService, CategoryService categoryService, SupplierService supplierService){
         this.productService=productService;
-        this.categoryService=categoryService;
         this.supplierService=supplierService;
+        this.categoryService=categoryService;
     }
 
     @GetMapping("/products")
@@ -40,7 +42,7 @@ public class ProductController {
             }
             return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.of(productDTOS, "success"));
         }catch (DataAccessException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while getting suppliers"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while getting products"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Bad Request"));
         }
@@ -52,49 +54,45 @@ public class ProductController {
             return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.of(new ProductDTO(product), "success"));
         }catch (DataAccessException ex) {
 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while getting suppliers"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while getting product"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Bad Request"));
         }
     }
     @PostMapping("/product")
-    public ResponseEntity<ResponseDTO> addProduct(@RequestBody ProductDTO productDTO) {
+    public ResponseEntity<ResponseDTO> addProduct(@Valid @RequestBody ProductDTO productDTO) {
         try {
-            productService.addOrUpdateProduct(convert(productDTO));
-            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDTO.of(productDTO,"success"));
+            Product product =productService.addOrUpdateProduct(convert(productDTO));
+            return ResponseEntity.status(HttpStatus.CREATED).body(ResponseDTO.of(new ProductDTO(product),"success"));
         }catch (DataAccessException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while adding supplier"));
-        } catch (MethodArgumentNotValidException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Validation failed"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while adding product"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Bad Request"));
         }
     }
     @PutMapping("/product")
-    public ResponseEntity<ResponseDTO> updateProduct(@RequestBody ProductDTO productDTO){
+    public ResponseEntity<ResponseDTO> updateProduct(@Valid @RequestBody ProductDTO productDTO){
         try {
             Product product = convert(productDTO);
             product.setId(productDTO.getId());
-            productService.addOrUpdateProduct(product);
+            Product addedProduct =productService.addOrUpdateProduct(product);
 
-            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.of(new ProductDTO(productService.getProductByID(productDTO.getId())),"success"));
+            return ResponseEntity.status(HttpStatus.OK).body(ResponseDTO.of(new ProductDTO(addedProduct),"success"));
         }catch (DataAccessException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while adding supplier"));
-        } catch (MethodArgumentNotValidException ex) {
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Validation failed"));
-        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(ResponseDTO.of("Error while updating product"));
+        }  catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ResponseDTO.of("Bad Request"));
         }
     }
     @DeleteMapping("/product")
     public ResponseEntity<String> deleteProduct(@RequestParam("id") long id){
         try{
-        Product product=productService.deleteProduct(id);
+        productService.deleteProduct(id);
 
         return ResponseEntity.status(HttpStatus.NO_CONTENT).body("success");
         }
         catch (DataAccessException ex) {
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(("Error while getting suppliers"));
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(("Error while deleting product"));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(("Bad Request"));
         }

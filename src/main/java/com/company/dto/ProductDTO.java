@@ -1,13 +1,20 @@
 package com.company.dto;
 
+import com.company.annotation.*;
 import com.company.entity.Product;
 
 public class ProductDTO {
     private long id;
+    @FixedSize(min=3, max=50)
+    @NotNullOrBlank
     private String name;
+    @PositivePrice
     private double price;
+    @MaxSize
     private String description;
+    @Exists
     private CategoryDTO categoryDTO;
+    @Exists
     private SupplierDTO supplierDTO;
     public ProductDTO(){}
     public ProductDTO(Product product) {

@@ -14,14 +14,16 @@ public class Category {
     @Column(name = "id")
     private long id;
     @Basic
-    @NotBlank
-    @Size(min = 3, max = 50)
-    @Column(name = "name", nullable = false)
+    @Column(name = "name")
     private String name;
     @OneToMany(mappedBy = "categoryByCategoryId")
     private List<Product> productsById;
     public Category(){}
     public Category(long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    public Category( String name) {
         this.id = id;
         this.name = name;
     }
